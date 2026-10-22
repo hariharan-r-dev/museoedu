@@ -1,18 +1,102 @@
 const toggle = document.querySelector('.menu-toggle');
 const menu = document.querySelector('#mobile-menu');
-toggle.addEventListener('click', () => {
-  const open = toggle.getAttribute('aria-expanded') === 'true';
-  toggle.setAttribute('aria-expanded', String(!open));
-  toggle.querySelector('.menu-symbol').textContent = open ? '+' : '—';
-  menu.hidden = open;
-  document.body.style.overflow = open ? '' : 'hidden';
-});
-menu.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+const closeButton = menu?.querySelector('.menu-close');
+const header = document.querySelector('[data-header]');
+const pageRegions = [document.querySelector('main'), document.querySelector('footer')].filter(Boolean);
+let menuIsOpen = false;
+
+const menuFocusable = () => [...menu.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+  .filter(element => !element.hasAttribute('hidden'));
+
+const setPageInert = inert => {
+  pageRegions.forEach(region => {
+    if (inert) region.setAttribute('inert', '');
+    else region.removeAttribute('inert');
+  });
+};
+
+const openMenu = () => {
+  if (!toggle || !menu || menuIsOpen) return;
+  menuIsOpen = true;
+  header?.classList.remove('is-hidden');
+  toggle.setAttribute('aria-expanded', 'true');
+  toggle.setAttribute('aria-label', 'Close navigation menu');
+  toggle.querySelector('.menu-symbol').textContent = '—';
+  menu.setAttribute('aria-hidden', 'false');
+  menu.classList.add('is-open');
+  document.body.classList.add('menu-open');
+  setPageInert(true);
+  requestAnimationFrame(() => closeButton?.focus());
+};
+
+const closeMenu = ({ restoreFocus = true } = {}) => {
+  if (!toggle || !menu || !menuIsOpen) return;
+  menuIsOpen = false;
   toggle.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-label', 'Open navigation menu');
   toggle.querySelector('.menu-symbol').textContent = '+';
-  menu.hidden = true;
-  document.body.style.overflow = '';
-}));
+  menu.setAttribute('aria-hidden', 'true');
+  menu.classList.remove('is-open');
+  document.body.classList.remove('menu-open');
+  setPageInert(false);
+  if (restoreFocus) toggle.focus();
+};
+
+toggle?.addEventListener('click', () => menuIsOpen ? closeMenu() : openMenu());
+closeButton?.addEventListener('click', () => closeMenu());
+menu?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => closeMenu({ restoreFocus: false })));
+
+const serviceHub = document.querySelector('.service-hub');
+const serviceHubToggle = serviceHub?.querySelector('.service-hub-toggle');
+
+const setServiceHub = open => {
+  if (!serviceHub || !serviceHubToggle) return;
+  serviceHub.classList.toggle('is-open', open);
+  serviceHubToggle.setAttribute('aria-expanded', String(open));
+};
+
+serviceHubToggle?.addEventListener('click', event => {
+  event.stopPropagation();
+  setServiceHub(!serviceHub.classList.contains('is-open'));
+});
+
+serviceHub?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setServiceHub(false)));
+
+document.addEventListener('click', event => {
+  if (serviceHub && !serviceHub.contains(event.target)) setServiceHub(false);
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && serviceHub?.classList.contains('is-open')) {
+    event.preventDefault();
+    setServiceHub(false);
+    serviceHubToggle.focus();
+  }
+});
+
+document.addEventListener('keydown', event => {
+  if (!menuIsOpen) return;
+
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeMenu();
+    return;
+  }
+
+  if (event.key !== 'Tab') return;
+  const focusable = menuFocusable();
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus();
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus();
+  }
+});
 
 document.querySelectorAll('.service-item button').forEach(button => {
   button.addEventListener('click', () => {
@@ -37,12 +121,22 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: .12 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-const header = document.querySelector('[data-header]');
-let lastY = 0;
+let lastY = window.scrollY;
+let scrollFrame;
 window.addEventListener('scroll', () => {
-  const y = window.scrollY;
-  header.classList.toggle('is-sticky', y > 420 && y < lastY);
-  lastY = y;
+  if (scrollFrame) return;
+  scrollFrame = requestAnimationFrame(() => {
+    const y = Math.max(0, window.scrollY);
+    const delta = y - lastY;
+
+    if (!menuIsOpen) {
+      if (y <= 120 || delta < -1) header?.classList.remove('is-hidden');
+      else if (delta > 1) header?.classList.add('is-hidden');
+    }
+
+    lastY = y;
+    scrollFrame = null;
+  });
 }, { passive: true });
 
 document.querySelector('.back-to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));

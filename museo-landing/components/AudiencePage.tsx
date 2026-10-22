@@ -1,0 +1,8 @@
+import { PageFrame } from "./PageFrame";
+
+type Service = { title: string; description: string };
+type Props = { audience: string; title: React.ReactNode; intro: string; image: string; imageAlt: string; sectionTitle: string; sectionIntro: string; services: Service[]; featureTitle: string; featureCopy: string; footerHeading: string };
+
+export function AudiencePage(props: Props) {
+  return <PageFrame className="service-page" footerHeading={props.footerHeading}><section className="audience-hero" id="top"><p className="about-kicker">{props.audience}</p><h1>{props.title}</h1><div><p>{props.intro}</p><a href="#services">Explore services ↓</a></div></section><figure className="audience-media reveal"><img src={props.image} alt={props.imageAlt}/><figcaption><span>In the museum and beyond</span><span>Designed around people</span></figcaption></figure><section className="audience-intro about-section"><p className="about-kicker">A connected approach</p><h2>{props.sectionTitle}</h2><p>{props.sectionIntro}</p></section><section className="audience-services about-section" id="services"><div className="audience-services-heading"><p className="about-kicker">Services</p><h2>Experiences made with purpose.</h2></div><div className="audience-service-list">{props.services.map((service,index)=><article className="reveal" key={service.title}><span>{String(index+1).padStart(2,"0")}</span><h3>{service.title}</h3><p>{service.description}</p></article>)}</div></section><section className="audience-feature about-section"><p className="about-kicker">Connected learning</p><div><h2>{props.featureTitle}</h2><p>{props.featureCopy}</p></div></section></PageFrame>;
+}
