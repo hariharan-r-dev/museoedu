@@ -1,0 +1,13 @@
+# Local build and deployment artifacts
+*.tar.gz
+*.zip
+
+# Operating-system and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependency and cache directories
+node_modules/
+.cache/
