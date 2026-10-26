@@ -6,11 +6,10 @@ import { useEffect, useRef, useState } from "react";
 import { Brand } from "./Brand";
 
 const links = [
-  { href: "/#work", label: "Experiences", count: "04" },
   { href: "/about", label: "About" },
   { href: "/events", label: "Events" },
   { href: "/blogs", label: "Insights" },
-  { href: "#contact", label: "Contact" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export function Header() {
@@ -61,7 +60,6 @@ export function Header() {
     <header className={`site-header${hidden ? " is-hidden" : ""}`}>
       <Brand />
       <nav className="desktop-nav" aria-label="Primary navigation">
-        <Link href="/#work">Experiences <span>04</span></Link>
         <div className={`service-hub${hubOpen ? " is-open" : ""}`} onMouseLeave={() => setHubOpen(false)}>
           <button className="service-hub-toggle" type="button" aria-expanded={hubOpen} aria-controls="service-hub-menu" onClick={() => setHubOpen(!hubOpen)}>Service Hub <span>+</span></button>
           <div className="service-hub-menu" id="service-hub-menu">
@@ -70,13 +68,13 @@ export function Header() {
             <Link href="/lms" aria-current={pathname === "/lms" ? "page" : undefined}><span>Learning systems</span></Link>
           </div>
         </div>
-        {links.slice(1).map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}>{link.label}</Link>)}
+        {links.map(link => <Link key={link.href} href={link.href} aria-current={pathname === link.href ? "page" : undefined}>{link.label}</Link>)}
       </nav>
       <button ref={triggerRef} className="menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="mobile-menu" aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} onClick={() => setMenuOpen(!menuOpen)}><span>Menu</span><span className="menu-symbol">{menuOpen ? "—" : "+"}</span></button>
     </header>
     <div className={`mobile-menu${menuOpen ? " is-open" : ""}`} id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu" aria-hidden={!menuOpen}>
       <div className="mobile-menu-header"><Brand /><button ref={closeRef} className="menu-close" type="button" onClick={() => { setMenuOpen(false); triggerRef.current?.focus(); }}><span>Close</span><span>—</span></button></div>
-      <div className="mobile-menu-layout"><nav aria-label="Overlay navigation"><Link href="/#work" onClick={() => setMenuOpen(false)}><span>Experiences</span><small>04</small></Link><Link href="/visitors" onClick={() => setMenuOpen(false)}><span>For visitors</span></Link><Link href="/professionals" onClick={() => setMenuOpen(false)}><span>For professionals</span></Link><Link href="/lms" onClick={() => setMenuOpen(false)}><span>Learning systems</span></Link><Link href="/events" onClick={() => setMenuOpen(false)}><span>Events</span></Link><Link href="/blogs" onClick={() => setMenuOpen(false)}><span>Insights</span></Link><Link href="/faq" onClick={() => setMenuOpen(false)}><span>FAQs</span></Link><Link href="/about" onClick={() => setMenuOpen(false)}><span>About</span></Link><Link href="#contact" onClick={() => setMenuOpen(false)}><span>Contact</span></Link></nav><div className="mobile-menu-aside"><p>Preserve the past.<br/>Inspire what comes next.</p><a href="mailto:hello@museoedu.com">hello@museoedu.com ↗</a></div></div>
+      <div className="mobile-menu-layout"><nav aria-label="Overlay navigation"><Link href="/visitors" onClick={() => setMenuOpen(false)}><span>For visitors</span></Link><Link href="/professionals" onClick={() => setMenuOpen(false)}><span>For professionals</span></Link><Link href="/lms" onClick={() => setMenuOpen(false)}><span>Learning systems</span></Link><Link href="/events" onClick={() => setMenuOpen(false)}><span>Events</span></Link><Link href="/blogs" onClick={() => setMenuOpen(false)}><span>Insights</span></Link><Link href="/faq" onClick={() => setMenuOpen(false)}><span>FAQs</span></Link><Link href="/about" onClick={() => setMenuOpen(false)}><span>About</span></Link><Link href="/contact" onClick={() => setMenuOpen(false)}><span>Contact</span></Link></nav><div className="mobile-menu-aside"><p>Preserve the past.<br/>Inspire what comes next.</p><a href="mailto:hello@museoedu.com">hello@museoedu.com ↗</a></div></div>
     </div>
   </>;
 }
