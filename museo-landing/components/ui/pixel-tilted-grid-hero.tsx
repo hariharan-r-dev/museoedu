@@ -5,6 +5,7 @@ import * as React from "react";
 const SLICES = 16;
 const CAMERA = 1.6;
 const MAX_WIDTH = .55;
+const SLICE_OVERLAP = 2.5;
 export type GridImage = { src: string; alt?: string };
 
 export function PixelTiltedGridHero({ images, children, className = "", ...props }: React.ComponentProps<"section"> & { images: GridImage[] }) {
@@ -63,7 +64,7 @@ export function PixelTiltedGridHero({ images, children, className = "", ...props
             const share = aspect / SLICES;
             const angle = (aspect/2-(sliceIndex+.5)*share)*unit;
             slice.className = `tilted-grid-react-slice${sliceIndex===0?" is-first":""}${sliceIndex===SLICES-1?" is-last":""}`;
-            Object.assign(slice.style, { left: `${(tileWidth-sliceWidth)/2}px`, width: `${sliceWidth+(sliceIndex===SLICES-1?0:1)}px`, height: `${tileHeight}px`, backgroundSize: `${tileWidth}px 100%`, backgroundPosition: `${-sliceIndex*sliceWidth}px 0`, backgroundRepeat: "no-repeat", transform: turn(angle) });
+            Object.assign(slice.style, { left: `${(tileWidth-sliceWidth)/2}px`, width: `${sliceWidth+(sliceIndex===SLICES-1?0:SLICE_OVERLAP)}px`, height: `${tileHeight}px`, backgroundSize: `${tileWidth}px 100%`, backgroundPosition: `${-sliceIndex*sliceWidth}px 0`, backgroundRepeat: "no-repeat", transform: turn(angle) });
             tile.append(slice);
           }
           setImage(firstImage);
